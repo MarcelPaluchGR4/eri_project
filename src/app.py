@@ -1,32 +1,111 @@
+from random import randint
+from tkinter import DoubleVar
+
 import customtkinter as ctk
 
+MAP_HEIGHT = 20
+MAP_WIDTH = 20
+
+
 class App(ctk.CTk):
-    def __init__(self, fg_color = None, **kwargs) -> None:
+    ratio = 0.2
+
+    def __init__(self, fg_color=None, **kwargs) -> None:
         super().__init__(fg_color, **kwargs)
         ctk.set_appearance_mode("dark")
-        self.create_elements()
-    
-    def create_elements(self) -> None:
+        self.create_frames()
+        self.create_default_grid()
+        self.create_buttons()
+
+    def create_frames(self):
+        self.grid_frame = ctk.CTkFrame(self)
+        self.buttons_frame = ctk.CTkFrame(self)
+        self.grid_frame.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
+        self.buttons_frame.grid(row=0, column=1, padx=10, pady=10, sticky="NSEW")
+
+    def create_default_grid(self) -> None:
         self.buttons = []
-        for i in range(20):
+        for i in range(MAP_WIDTH):
             row_buttons = []
-            for j in range(20):
+            for j in range(MAP_HEIGHT):
                 button = ctk.CTkButton(
-                    master=self,
+                    master=self.grid_frame,
                     text="",
-                    width=30,
-                    command=lambda x=i, y=j: self.change_color(x, y),  # Pass row and column index
-                    fg_color="blue",  # Initial color
-                    hover_color="lightblue"  # Hover color
+                    width=40,
+                    height=40,
+                    corner_radius=0,
+                    command=lambda x=i, y=j: self.change_color(x, y),
                 )
-                button.grid(row=i, column=j, padx=1, pady=1)  # Arrange in a grid
+                button.grid(row=i, column=j, padx=1, pady=1)
                 row_buttons.append(button)
             self.buttons.append(row_buttons)
+        self.set_default_start_and_finish()
+
+    def set_default_start_and_finish(self):
+        self.buttons[-1][0].configure(text="S")
+        self.buttons[0][-1].configure(text="F")
 
     def change_color(self, row, col):
-        # Change the color of the button dynamically
-        self.buttons[row][col].configure(fg_color="green")  # Change to desired color
+        if (self.buttons[row][col].cget("fg_color")) == "red":
+            self.buttons[row][col].configure(fg_color="#1F6AA5")
+        else:
+            self.buttons[row][col].configure(fg_color="red")
 
+    def set_ratio(self, value):
+        App.ratio = value
+
+    def create_buttons(self) -> None:
+        self.random_map_button = ctk.CTkButton(
+            self.buttons_frame,
+            text="Random map",
+            command=self.randomize_map,
+            corner_radius=0,
+        )
+        self.ratio_slider = ctk.CTkSlider(
+            self.buttons_frame,
+            from_=0.1,
+            to=0.9,
+            command=self.set_ratio,
+            variable=DoubleVar(value=0.2),
+            number_of_steps=9,
+        )
+        self.set_start_button = ctk.CTkButton(
+            self.buttons_frame,
+            text="Set start",
+            corner_radius=0,
+        )
+        self.set_finish_button = ctk.CTkButton(
+            self.buttons_frame,
+            text="Set Finish",
+            corner_radius=0,
+        )
+        self.reset_button = ctk.CTkButton(
+            self.buttons_frame,
+            text="Reset",
+            command=self.create_default_grid,
+            corner_radius=0,
+        )
+        self.find_path_button = ctk.CTkButton(
+            self.buttons_frame,
+            text="Find Path",
+            corner_radius=0,
+        )
+
+        self.random_map_button.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
+        self.ratio_slider.grid(row=1, column=0, padx=10, pady=10, sticky="NSEW")
+        self.set_start_button.grid(row=2, column=0, padx=10, pady=10, sticky="NSEW")
+        self.set_finish_button.grid(row=3, column=0, padx=10, pady=10, sticky="NSEW")
+        self.reset_button.grid(row=98, column=0, padx=10, pady=10, sticky="NSEW")
+        self.find_path_button.grid(row=99, column=0, padx=10, pady=10, sticky="NSEW")
+
+    def randomize_map(self) -> None:
+        self.create_default_grid()
+        total_elements = MAP_HEIGHT * MAP_WIDTH
+        number_of_unpassable = int(total_elements * App.ratio)
+        for _ in range(number_of_unpassable):
+            self.buttons[randint(0, MAP_WIDTH - 1)][
+                randint(0, MAP_HEIGHT - 1)
+            ].configure(fg_color="red")
 
 
 root = App()
