@@ -1,3 +1,5 @@
-from map_generator import MapGenerator
+from app import App
 
-MapGenerator()
+if __name__ == "main":
+    root = App()
+    root.mainloop()

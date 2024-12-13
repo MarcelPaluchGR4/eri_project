@@ -3,6 +3,8 @@ from tkinter import DoubleVar
 
 import customtkinter as ctk
 
+from a_star import Astar
+
 MAP_HEIGHT = 20
 MAP_WIDTH = 20
 
@@ -17,7 +19,7 @@ class App(ctk.CTk):
         self.create_default_grid()
         self.create_buttons()
 
-    def create_frames(self):
+    def create_frames(self) -> None:
         self.grid_frame = ctk.CTkFrame(self)
         self.buttons_frame = ctk.CTkFrame(self)
         self.grid_frame.grid(row=0, column=0, padx=10, pady=10, sticky="NSEW")
@@ -41,7 +43,7 @@ class App(ctk.CTk):
             self.buttons.append(row_buttons)
         self.set_default_start_and_finish()
 
-    def set_default_start_and_finish(self):
+    def set_default_start_and_finish(self) -> None:
         self.buttons[-1][0].configure(text="S")
         self.buttons[0][-1].configure(text="F")
 
@@ -51,7 +53,7 @@ class App(ctk.CTk):
         else:
             self.buttons[row][col].configure(fg_color="red")
 
-    def set_ratio(self, value):
+    def set_ratio(self, value: float) -> None:
         App.ratio = value
 
     def create_buttons(self) -> None:
@@ -88,6 +90,7 @@ class App(ctk.CTk):
         self.find_path_button = ctk.CTkButton(
             self.buttons_frame,
             text="Find Path",
+            command=lambda x=self.buttons: Astar(x),
             corner_radius=0,
         )
 
