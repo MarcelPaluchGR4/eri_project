@@ -4,8 +4,6 @@ from customtkinter import CTkButton
 
 PASSABLE_COLOR = "blue"
 BLOCKED_COLOR = "red"
-START_COLOR = "green"
-END_COLOR = "yellow"
 VISITED_COLOR = "gray"
 PATH_COLOR = "purple"
 
@@ -65,23 +63,22 @@ class Astar:
         while current != self.start:
             self.grid[current[0]][current[1]].configure(fg_color=PATH_COLOR)
             current = came_from[current]
-        self.grid[self.start[0]][self.start[1]].configure(fg_color=START_COLOR)
-        self.grid[self.end[0]][self.end[1]].configure(fg_color=END_COLOR)
 
     def heuristic(self, a, b):
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+        return abs(a[0] - a[1]) + abs(b[0] - b[1])
 
     def get_neighbors(self, current):
         row, col = current
         neighbors = []
+        if col < self.cols - 1:
+            neighbors.append((row, col + 1))  # Right
         if row > 0:
             neighbors.append((row - 1, col))  # Up
         if row < self.rows - 1:
             neighbors.append((row + 1, col))  # Down
         if col > 0:
             neighbors.append((row, col - 1))  # Left
-        if col < self.cols - 1:
-            neighbors.append((row, col + 1))  # Right
+
         return neighbors
 
     def update_grid_visited(self):
